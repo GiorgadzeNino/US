@@ -336,7 +336,7 @@ const CARDS = [
     cta:"OPEN TC-03 REWARD",
     r:{ badge:"TC-03", pass:"✓ BUG DETECTED",
       body:`<p>Bug report #001:</p><p>Severity: Critical. Reproducible: ყოველ დღე. 😍</p><p>Resolution: WON'T FIX — feature, not a bug.</p>`,
-      emoji:"🧴", box:`REWARD: L'Homme — მამაკაცს, რომლის სურნელიც ყველაზე მეტად მიყვარს.` }
+      emoji:"⚓", box:`REWARD: SEA BATTLE 🚢` }
   },
   { // TC-04
     badge:"TC-04", title:"Performance Test", variant:"dark",
@@ -345,9 +345,10 @@ const CARDS = [
     qHTML:`<p class="qline"><span class="qlabel">დავალება:</span> <span class="accent">SEA BATTLE</span></p><p class="lines">მოწინააღმდეგე: მე.<br>მიზანი: ჩაძირე ჩემი გემები.</p><p class="plead">კარგი Tester მხოლოდ Bug-ს არ ეძებს — ზოგჯერ მას ბრძოლაც უწევს.</p>`,
     expected:`▸ Expected Result: გამარჯვება. თამაშის შემდეგ →`,
     cta:"REWARD UNLOCKED",
-    r:{ badge:"TC-04", pass:"✓ REWARD UNLOCKED",
+    r:{ badge:"TC-04", pass:"✓ PERFORMANCE TEST PASSED",
       body:`<p>შედეგის მიუხედავად…</p><p>ამ ეტაპამდე მოსვლა უკვე წარმატებაა.</p><p class="mono">TEST RESULT: PASSED</p>`,
-      emoji:"⚓", box:`REWARD: Performance approved.` }
+      center:`<div class="love">I LOVE YOU.</div>`,
+      emoji:"", box:`` }
   },
   { // TC-05 — BUG HUNT
     badge:"TC-05", title:"Bug Hunt 🔎", variant:"dark", type:"bughunt", time:180,
@@ -358,7 +359,7 @@ const CARDS = [
     cta:"BUG HUNT PASSED · REWARD",
     r:{ badge:"TC-05", pass:"✓ BUG HUNT PASSED",
       body:`<p class="mono">5/5 Bugs detected.</p><p class="mono">Severity: Critical<br>Tester: Excellent<br>System: Safe</p><p>შენ დაამტკიცე, რომ პატარა დეტალსაც კი ვერ გამოგაპარებენ. 😎</p><p>მაგრამ ერთი რამ არის, რასაც ვერცერთი Tester ვერ დააფიქსირებს როგორც Bug…</p><p class="big">შენი ადგილი ჩემს ცხოვრებაში. ❤️</p><p class="mono">Status: PERMANENT</p>`,
-      emoji:"🎁", box:`REWARD UNLOCKED.` }
+      emoji:"🧴", box:`REWARD: L'Homme — მამაკაცს, რომლის სურნელიც ყველაზე მეტად მიყვარს.` }
   },
   { // TC-06 — SECURITY (interactive locked screen)
     badge:"TC-06", title:"Security Test", variant:"dark", type:"security", password:"29.08.2025",
@@ -417,7 +418,7 @@ function render(){
     <div class="pass">${c.r.pass}</div>
     <div class="r-body">${c.r.body}</div>
     ${c.r.center ? `<div class="r-center">${c.r.center}</div>` : ""}
-    <div class="reward-box"><span class="emoji">${c.r.emoji}</span><div class="rtxt">${c.r.box}</div></div>
+    ${c.r.box ? `<div class="reward-box"><span class="emoji">${c.r.emoji}</span><div class="rtxt">${c.r.box}</div></div>` : ""}
     <button class="r-back" type="button" id="backBtn">↺ დაბრუნება ტესტზე</button>`;
 
   bind();
