@@ -570,8 +570,8 @@ function bindSec(c){
 
 function openReward(){
   card.classList.add("flipped");
-  if (idx+1 > unlocked && idx < CARDS.length-1){
-    unlocked = idx+1;
+  if (idx < CARDS.length-1 && idx+1 > unlocked){
+    unlocked = Math.max(unlocked, idx+1);
     localStorage.setItem(UKEY, String(unlocked));
   }
   updateHeight();
@@ -605,8 +605,9 @@ function updateHeight(){
 
 function updateNav(){
   $("counter").textContent = String(idx+1).padStart(2,"0") + " / " + String(CARDS.length).padStart(2,"0");
+  const rewardOpen = card.classList.contains("flipped");
   $("prev").disabled = idx===0;
-  $("next").disabled = idx>=CARDS.length-1 || idx>=unlocked;
+  $("next").disabled = idx>=CARDS.length-1 || (idx>=unlocked && !rewardOpen);
   const dn = $("dotsNav");
   dn.innerHTML = "";
   CARDS.forEach((_,i)=>{
