@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>project_ჩვენ.qa</title>
+<style>
+  :root {
+    --page: #f2f0f3;
+    --page-2: #fbeef1;
+    --ink-soft: #6b6570;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, "Noto Sans Georgian", sans-serif;
+
+    /* dark question card */
+    --q-bg: #0f1218;
+    --q-title: #f4f6fa;
+    --q-body: #d5dae4;
+    --q-mute: #737e90;
+    --q-term: #8a93a6;
+    --q-red: #ff6b81;
+    --q-teal: #63d2e0;
+    --q-badge-bg: rgba(122,134,214,.16);
+    --q-badge-tx: #aab2ec;
+    --q-mod-bg: rgba(120,140,160,.15);
+    --q-mod-tx: #93c9d6;
+    --q-pri-bg: rgba(205,60,85,.16);
+    --q-pri-tx: #ff8296;
+    --q-high-bg: rgba(150,130,45,.20);
+    --q-high-tx: #d8c25f;
+    --q-opt-bg: #171b26;
+    --q-opt-bd: #232837;
+
+    /* pink reward card */
+    --r-bg: #fdeef1;
+    --r-bd: #f4d9e0;
+    --r-term: #b98d95;
+    --r-ink: #3b2b30;
+    --r-badge-bg: #f9d3dc;
+    --r-badge-tx: #d14760;
+    --r-pass-bg: #dff2e4;
+    --r-pass-bd: #b7e2c1;
+    --r-pass-tx: #2f9e58;
+    --r-box-bg: #ffffff;
+    --r-box-bd: #f1d7de;
+    --r-accent: #d14760;
+  }
+  * { box-sizing: border-box; }
+  html, body { min-height: 100%; }
+  body {
+    margin: 0; font-family: var(--sans); color: var(--r-ink);
+    -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(1100px 620px at 80% 4%, var(--page-2) 0%, transparent 55%),
+      radial-gradient(900px 600px at 10% 100%, #eef3ff 0%, transparent 55%),
+      var(--page);
+    min-height: 100dvh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: clamp(20px, 4vw, 44px) 16px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --page: #090a0e; --page-2: #1a0f14; --ink-soft: #8b858f; }
+    :root:not([data-theme="light"]) body { background:
+      radial-gradient(1100px 620px at 80% 4%, #1a0f14 0%, transparent 55%),
+      radial-gradient(900px 600px at 10% 100%, #0d1420 0%, transparent 55%),
+      var(--page); }
+  }
+
+  .kicker { font-family: var(--mono); font-size: 12.5px; letter-spacing: .05em; color: var(--ink-soft); margin: 0 0 18px; display: flex; align-items: center; gap: 9px; }
+  .kicker .heart { color: var(--r-accent); }
+
+  /* ---- stage / flip ---- */
+  .stage { perspective: 2200px; width: 100%; max-width: 470px; }
+  .card { position: relative; width: 100%; transform-style: preserve-3d; transition: transform .62s cubic-bezier(.4,.05,.2,1), height .35s ease; }
+  .card.flipped { transform: rotateY(180deg); }
+  .face {
+    position: absolute; top: 0; left: 0; width: 100%;
+    border-radius: 22px; padding: clamp(20px, 4.4vw, 30px);
+    box-shadow: 0 1px 2px rgba(15,18,24,.14), 0 30px 60px -24px rgba(15,18,24,.5);
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  }
+  .face.front { background: var(--q-bg); color: var(--q-body); }
+  .face.back  { transform: rotateY(180deg); background: var(--r-bg); border: 1px solid var(--r-bd); color: var(--r-ink); display: flex; flex-direction: column; }
+
+  /* FINAL variants */
+  .face.front.final { background: #0e0d13; }
+  .face.back.final {
+    background: linear-gradient(165deg, #2a1620, #1e0f16);
+    border: 1px solid rgba(255,120,140,.16); color: #ecdde1;
+  }
+
+  /* terminal bar */
+  .term { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .dots { display: flex; gap: 7px; }
+  .dots i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+  .dots .r1 { background: #ff5f57; } .dots .r2 { background: #febc2e; } .dots .r3 { background: #28c840; }
+  .term .path { font-family: var(--mono); font-size: 13px; }
+  .face.front .term .path { color: var(--q-term); }
+  .face.back  .term .path { color: var(--r-term); }
+  .face.back.final .term .path { color: #b98d95; }
+
+  .pill { font-family: var(--mono); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 8px; display: inline-block; letter-spacing: .02em; }
+  .pill.tc  { background: var(--q-badge-bg); color: var(--q-badge-tx); margin-bottom: 14px; }
+  .q-title  { font-size: clamp(21px, 4.6vw, 26px); font-weight: 750; color: var(--q-title); letter-spacing: -.01em; margin: 0 0 14px; }
+  .final .q-title { color: var(--q-red); }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .pill.mod { background: var(--q-mod-bg); color: var(--q-mod-tx); }
+  .pill.pri { background: var(--q-pri-bg); color: var(--q-pri-tx); }
+  .pill.high{ background: var(--q-high-bg); color: var(--q-high-tx); }
+  .pill.v   { background: var(--q-badge-bg); color: var(--q-badge-tx); }
+
+  .lead { color: var(--q-body); font-size: 15.5px; margin: 0 0 18px; }
+  .lead p { margin: 0 0 6px; }
+  .qblock { margin-bottom: 20px; }
+  .qlabel { color: var(--q-red); font-weight: 750; }
+  .qline  { margin: 0 0 10px; font-size: 16.5px; color: var(--q-title); font-weight: 600; }
+  p.qlabel { font-size: 16px; margin: 0 0 4px; }
+  .qtext  { color: var(--q-title); font-size: 16.5px; font-weight: 600; margin: 0 0 12px; }
+  .accent { color: var(--q-red); font-weight: 750; letter-spacing: .04em; }
+  .hl     { color: var(--q-red); font-weight: 700; }
+  .lines  { color: var(--q-body); font-size: 15.5px; line-height: 1.7; margin: 0 0 12px; }
+  .plead  { color: var(--q-body); font-size: 15px; margin: 0 0 12px; }
+  .hint   { color: var(--q-body); font-size: 15px; margin: 0 0 6px; }
+  .hint b { color: var(--q-red); }
+  .warn   { color: var(--q-mute); font-size: 14.5px; margin: 0 0 6px; }
+  .center-q { text-align: center; font-size: 17px; line-height: 1.55; color: var(--q-title); font-weight: 600; margin: 26px 6px; }
+
+  .opts { display: flex; flex-direction: column; gap: 9px; margin-bottom: 20px; }
+  .opt { font: inherit; text-align: left; cursor: pointer; background: var(--q-opt-bg); color: var(--q-body);
+    border: 1px solid var(--q-opt-bd); border-radius: 12px; padding: 12px 14px; font-size: 15.5px;
+    display: flex; align-items: center; gap: 11px; transition: background .15s, border-color .15s, transform .1s; }
+  .opt:hover { background: #1d2231; border-color: #313850; }
+  .opt:active { transform: scale(.99); }
+  .opt .key { font-family: var(--mono); font-size: 13px; color: var(--q-mute); width: 16px; flex: none; }
+  .opt .tick { margin-left: auto; color: #28c840; opacity: 0; font-weight: 700; transition: opacity .2s; }
+  .opt.sel { border-color: #2b7a44; background: rgba(40,200,64,.10); color: var(--q-title); }
+  .opt.sel .tick { opacity: 1; }
+  .opt.sel .key { color: #28c840; }
+
+  .qfoot { font-family: var(--mono); font-size: 12.5px; color: var(--q-mute); line-height: 1.6; border-top: 1px dashed #262c3b; padding-top: 15px; }
+  .reward-cta { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; background: none; border: 1px solid transparent; font: inherit; font-family: var(--mono); font-size: 12.5px; color: var(--q-teal); cursor: pointer; padding: 5px 0; transition: color .2s, text-shadow .2s; text-shadow: 0 0 14px rgba(99,210,224,.45); }
+  .reward-cta::before { content: "→ "; }
+  .reward-cta:hover { color: #9bebf5; }
+  .reward-cta[disabled] { color: var(--q-mute); cursor: not-allowed; text-shadow: none; }
+  .reward-cta[disabled]::before { content: ""; }
+
+  /* reward face */
+  .pill.tcr { background: var(--r-badge-bg); color: var(--r-badge-tx); margin-bottom: 16px; }
+  .back.final .pill.tcr { background: rgba(209,71,96,.22); color: #ff9fb0; }
+  .pass { font-family: var(--mono); font-size: 13px; font-weight: 600; background: var(--r-pass-bg); border: 1px solid var(--r-pass-bd); color: var(--r-pass-tx); padding: 10px 14px; border-radius: 999px; display: inline-block; margin-bottom: 20px; }
+  .r-body { font-size: 16px; line-height: 1.55; }
+  .r-body p { margin: 0 0 15px; }
+  .r-body b { font-weight: 750; }
+  .r-body .mono { font-family: var(--mono); font-size: 14.5px; }
+  .r-body .big { font-size: 19px; font-weight: 750; }
+  .back.final .r-body { color: #ecdde1; }
+  .r-center { text-align: center; margin: 8px 0 20px; }
+  .r-center .love { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--r-accent); letter-spacing: .06em; }
+  .back.final .r-center .love { color: #ff6b81; }
+  .r-center .sig { font-size: 14px; color: var(--r-term); margin-top: 8px; }
+  .back.final .r-center .sig { color: #d8a9b1; }
+
+  .reward-box { margin-top: auto; background: var(--r-box-bg); border: 1px solid var(--r-box-bd); border-radius: 14px; padding: 15px 16px; display: flex; align-items: center; gap: 13px; }
+  .back.final .reward-box { background: rgba(255,255,255,.05); border-color: rgba(255,120,140,.2); }
+  .reward-box .emoji { font-size: 26px; line-height: 1; flex: none; }
+  .reward-box .rtxt { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--r-accent); line-height: 1.55; }
+  .back.final .reward-box .rtxt { color: #ff9fb0; }
+
+  .r-back { margin-top: 16px; align-self: center; font: inherit; font-family: var(--mono); font-size: 12.5px; cursor: pointer; background: none; border: none; color: var(--r-term); display: inline-flex; gap: 6px; padding: 6px 10px; border-radius: 8px; }
+  .back.final .r-back { color: #c99aa2; }
+  .r-back:hover { color: var(--r-accent); }
+
+  /* nav */
+  .nav { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 22px; }
+  .nav button { font: inherit; font-size: 14px; cursor: pointer; background: rgba(0,0,0,.04); border: 1px solid rgba(0,0,0,.1); color: var(--ink-soft); border-radius: 10px; padding: 8px 14px; transition: all .15s; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .nav button { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.1); color: #b7b1bb; } }
+  .nav button:hover:not(:disabled) { border-color: var(--r-accent); color: var(--r-accent); }
+  .nav button:disabled { opacity: .35; cursor: not-allowed; }
+  .counter { font-family: var(--mono); font-size: 12.5px; color: var(--ink-soft); font-variant-numeric: tabular-nums; min-width: 62px; text-align: center; }
+  .dots-nav { display: flex; gap: 7px; justify-content: center; margin-top: 14px; }
+  .dots-nav button { width: 9px; height: 9px; border-radius: 50%; border: none; padding: 0; cursor: pointer; background: rgba(0,0,0,.15); transition: transform .15s, background .15s; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .dots-nav button { background: rgba(255,255,255,.18); } }
+  .dots-nav button.on { background: var(--r-accent); transform: scale(1.25); }
+  .dots-nav button.locked { opacity: .3; cursor: not-allowed; }
+
+  .burst { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 30; }
+  .burst span { position: absolute; animation: rise 1.6s ease-out forwards; }
+  @keyframes rise { 0% { transform: translateY(0) scale(.6); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(-180px) scale(1.15); opacity: 0; } }
+
+  @media (prefers-reduced-motion: reduce) { .card { transition: height .01s; } .burst span { display: none; } }
+  :focus-visible { outline: 2px solid var(--q-teal); outline-offset: 3px; }
+</style>
+</head>
+<body>
+
+
+<p class="kicker">project_ჩვენ.qa <span class="heart">♥</span> compatibility suite</p>
+
+<div class="stage">
+  <div class="card" id="card">
+    <div class="face front" id="front"></div>
+    <div class="face back"  id="back"></div>
+  </div>
+</div>
+
+<div class="nav">
+  <button id="prev" type="button">← წინა</button>
+  <span class="counter" id="counter">01 / 07</span>
+  <button id="next" type="button">შემდეგი →</button>
+</div>
+<div class="dots-nav" id="dotsNav"></div>
+
+<script>
+const CARDS = [
+  { // TC-01
+    badge:"TC-01", title:"Compatibility Test", variant:"dark",
+    meta:[{t:"Module: Compatibility",cls:"mod"},{t:"Priority: Critical",cls:"pri"}],
+    lead:`<p>პირველი ტესტი ყველაზე მარტივია.</p>`,
+    qHTML:`<p class="qlabel">Question:</p><p class="qtext">რა მიყვარს შენში ყველაზე მეტად?</p>`,
+    options:["შენი ხასიათი","შენი ღიმილი","შენი იუმორი","ყველაფერი ერთად"],
+    requireSelect:true,
+    expected:`▸ Expected Result: სწორი პასუხის პოვნა.`,
+    cta:"OPEN TC-01 REWARD",
+    r:{ badge:"TC-01", pass:"✓ TEST PASSED · Compatibility 100%",
+      body:`<p>შენთან ჩემი სისტემა თავიდანვე იდეალურად იყო თავსებადი.</p><p>არანაირი <b>Error</b>.<br>არანაირი <b>Conflict</b>.<br>არანაირი <b>Compatibility Issue</b>.</p>`,
+      emoji:"👕", box:`REWARD: ეს პერანგი შენთვისაა.` }
+  },
+  { // TC-02
+    badge:"TC-02", title:"Memory Test", variant:"dark",
+    meta:[{t:"Module: Memory",cls:"mod"},{t:"Priority: High",cls:"high"}],
+    lead:`<p>ახლა ვამოწმებთ შენს მეხსიერებას.</p>`,
+    qHTML:`<p class="qlabel">Question:</p><p class="qtext">გაიხსენე ერთი განსაკუთრებული მომენტი, როცა ჩვენი ისტორია სრულიად სხვა ეტაპზე გადავიდა.</p><p class="hint"><b>Hint:</b> ეს იყო ის მომენტი, რომელიც უბრალოდ „მომენტად" აღარ დარჩა.</p>`,
+    expected:`▸ Expected Result: სწორი მოგონების გახსენება.`,
+    cta:"OPEN TC-02 REWARD",
+    r:{ badge:"TC-02", pass:"✓ TEST PASSED · Memory",
+      body:`<p>ზოგი მომენტი უბრალოდ არ ინახება Memory-ში.<br>ზოგი მომენტი სამუდამოდ ხდება ჩვენი ისტორიის ნაწილი.</p><p>ეს პატარა საჩუქარი კი სწორედ ერთ-ერთ ასეთ მოგონებას უკავშირდება.</p>`,
+      emoji:"🎁", box:`REWARD: განსაკუთრებული მოგონების reminder.` }
+  },
+  { // TC-03
+    badge:"TC-03", title:"Bug Detection", variant:"dark",
+    meta:[{t:"Module: Bug Detection",cls:"mod"},{t:"Priority: Critical",cls:"pri"}],
+    lead:`<p>ყველა კარგ სისტემას აქვს რაღაც პატარა Bug.</p>`,
+    qHTML:`<p class="qlabel">Question:</p><p class="qtext">იპოვე ჩემში ერთი ისეთი „ბაგი", რომლის გამოსწორებასაც საერთოდ არ აპირებ.</p><p class="warn">⚠ „არანაირი ბაგი არ გაქვს" — არ ითვლება სწორ პასუხად.</p>`,
+    expected:`▸ Expected Result: ერთი საყვარელი Bug-ის აღმოჩენა.`,
+    cta:"OPEN TC-03 REWARD",
+    r:{ badge:"TC-03", pass:"✓ BUG DETECTED",
+      body:`<p>Bug report #001:</p><p class="big">შენ.</p><p>Severity: Critical. Reproducible: ყოველ დღე. 😍</p><p>Resolution: WON'T FIX — feature, not a bug.</p>`,
+      emoji:"🧴", box:`REWARD: L'Homme — მამაკაცს, რომლის სურნელიც ყველაზე მეტად მიყვარს.` }
+  },
+  { // TC-04
+    badge:"TC-04", title:"Performance Test", variant:"dark",
+    meta:[{t:"Module: Performance",cls:"mod"},{t:"Priority: High",cls:"high"}],
+    lead:`<p>ვამოწმებთ სისტემის სისწრაფეს, რეაქციას და სტრესის ქვეშ გადაწყვეტილების მიღებას.</p>`,
+    qHTML:`<p class="qline"><span class="qlabel">დავალება:</span> <span class="accent">SEA BATTLE</span></p><p class="lines">მოწინააღმდეგე: მე.<br>მიზანი: ჩაძირე ჩემი გემები.</p><p class="plead">კარგი Tester მხოლოდ Bug-ს არ ეძებს — ზოგჯერ მას ბრძოლაც უწევს.</p>`,
+    expected:`▸ Expected Result: გამარჯვება. თამაშის შემდეგ →`,
+    cta:"REWARD UNLOCKED",
+    r:{ badge:"TC-04", pass:"✓ REWARD UNLOCKED",
+      body:`<p>შედეგის მიუხედავად…</p><p>ამ ეტაპამდე მოსვლა უკვე წარმატებაა.</p><p class="mono">TEST RESULT: PASSED</p>`,
+      emoji:"⚓", box:`REWARD: Performance approved.` }
+  },
+  { // TC-05
+    badge:"TC-05", title:"Stress Test", variant:"dark",
+    meta:[{t:"Module: Stress Test",cls:"mod"},{t:"Priority: Critical",cls:"pri"}],
+    lead:`<p>აქ უკვე მარტივი არ იქნება. სისტემა გადაყვანილია მაქსიმალურ დატვირთვაზე.</p>`,
+    qHTML:`<p class="qline"><span class="qlabel">დავალება:</span> გაიმეორე ტესტი. ისევ <span class="accent">SEA BATTLE</span>.</p><p class="lines">ამჯერად პირობები იცვლება: გაქვს შეზღუდული დრო.</p><p class="plead">არ იჩქარო. არ დაიბენ. არ დანებდე.</p>`,
+    expected:`▸ Expected Result: Stress-ის პირობებშიც სწორი გადაწყვეტილება.`,
+    cta:"REWARD",
+    r:{ badge:"TC-05", pass:"✓ STRESS TEST PASSED",
+      body:`<p>სისტემამ გაუძლო დატვირთვას. შენც.</p><p>ერთი რამ საბოლოოდ დადასტურდა: შენთან ერთად ყველაზე რთული Level-იც კი სასიამოვნოა.</p>`,
+      emoji:"🔥", box:`REWARD UNLOCKED.` }
+  },
+  { // TC-06
+    badge:"TC-06", title:"Security Test", variant:"dark",
+    meta:[{t:"Module: Security",cls:"mod"},{t:"Priority: Critical",cls:"pri"}],
+    lead:`<p>ბოლო მნიშვნელოვანი უსაფრთხოების შემოწმება.</p>`,
+    qHTML:`<p class="qline"><span class="qlabel">დავალება:</span> დაიცავი სისტემა გარე საფრთხეებისგან.</p><p class="plead">მაგრამ არსებობს ერთი პრობლემა… <span class="hl">Security breach detected.</span> ვიღაცამ უკვე შეაღწია სისტემაში. ვინ? მე.</p><p class="plead">ერთადერთი გამოსავალი: <span class="accent">ACCEPT ACCESS</span>.</p>`,
+    expected:`▸ Access granted. →`,
+    cta:"OPEN REWARD",
+    r:{ badge:"TC-06", pass:"✓ SECURITY TEST PASSED · Access granted",
+      body:`<p>რადგან ამ სისტემაში შენი Access Level არის:</p><p class="big">ADMIN</p><p>და რადგან Admin-ს შესაბამისი equipment სჭირდება…</p>`,
+      emoji:"🩲", box:`REWARD UNLOCKED.` }
+  },
+  { // FINAL
+    badge:"FINAL", title:"Final Regression Test", variant:"final",
+    meta:[{t:"Priority: CRITICAL",cls:"pri"},{t:"v1.0",cls:"v"}],
+    lead:`<p>ყველა Test Case გავლილია.<br>ყველა Bug აღმოჩენილია.<br>ყველა სისტემა შემოწმებულია.</p><p>დარჩა ერთადერთი კითხვა:</p>`,
+    qHTML:`<p class="center-q">თუ თავიდან მოგიწევდა არჩევანის გაკეთება… ისევ ამ პროექტს აირჩევდი? ისევ ამ სისტემაში შემოხვიდოდი? <span class="hl">ისევ მე ამირჩევდი?</span></p>`,
+    expected:`თუ პასუხია YES → FINAL TEST PASSED · Release v1.0 APPROVED FOR PRODUCTION.`,
+    cta:"YES ♥",
+    r:{ badge:"FINAL", variant:"final", pass:"✓ DEPLOYMENT COMPLETE",
+      body:`<p>Project „ჩვენ" — Successfully Deployed.</p><p>ოფიციალურად დადასტურებულია: ჩვენი სისტემა მუშაობს.<br>არანაირი critical bug. არანაირი unresolved issue. არანაირი rollback.</p><p>და რაც მთავარია — ეს არის ის ერთადერთი პროექტი, რომლის დასრულებაც არასდროს მინდა.</p>`,
+      center:`<div class="love">I LOVE YOU.</div><div class="sig">— სიყვარულით, შენი ნი ❤️</div>`,
+      emoji:"💍", box:`FINAL REWARD ❤️ · P.S.<br>Version 2.0 — Forever.` }
+  },
+];
+
+const $ = id => document.getElementById(id);
+const card = $("card"), front = $("front"), back = $("back");
+const UKEY = "chven-qa-unlocked";
+let idx = 0;
+let unlocked = Math.max(0, Math.min(CARDS.length-1, parseInt(localStorage.getItem(UKEY)||"0",10) || 0));
+
+function metaHTML(m){ return m.map(x=>`<span class="pill ${x.cls}">${x.t}</span>`).join(""); }
+
+function render(){
+  const c = CARDS[idx];
+  card.classList.remove("flipped");
+  front.className = "face front" + (c.variant==="final" ? " final" : "");
+  back.className  = "face back"  + (c.r.variant==="final" ? " final" : "");
+
+  front.innerHTML = `
+    <div class="term"><span class="dots"><i class="r1"></i><i class="r2"></i><i class="r3"></i></span><span class="path">project_ჩვენ.qa</span></div>
+    <span class="pill tc">${c.badge}</span>
+    <h1 class="q-title">${c.title}</h1>
+    <div class="meta">${metaHTML(c.meta)}</div>
+    <div class="lead">${c.lead}</div>
+    <div class="qblock">${c.qHTML}</div>
+    ${c.options ? `<div class="opts">${c.options.map((o,i)=>`<button class="opt" type="button" data-i="${i}"><span class="key">${"ABCD"[i]}.</span><span>${o}</span><span class="tick">✓</span></button>`).join("")}</div>` : ""}
+    <div class="qfoot">${c.expected}<br><button class="reward-cta" type="button" id="cta" ${c.requireSelect ? "disabled" : ""}>${c.cta}</button></div>`;
+
+  back.innerHTML = `
+    <div class="term"><span class="dots"><i class="r1"></i><i class="r2"></i><i class="r3"></i></span><span class="path">project_ჩვენ.qa · REWARD</span></div>
+    <span class="pill tcr">${c.r.badge} · REWARD</span>
+    <div class="pass">${c.r.pass}</div>
+    <div class="r-body">${c.r.body}</div>
+    ${c.r.center ? `<div class="r-center">${c.r.center}</div>` : ""}
+    <div class="reward-box"><span class="emoji">${c.r.emoji}</span><div class="rtxt">${c.r.box}</div></div>
+    <button class="r-back" type="button" id="backBtn">↺ დაბრუნება ტესტზე</button>`;
+
+  bind();
+  updateHeight();
+  updateNav();
+}
+
+function bind(){
+  const c = CARDS[idx];
+  const cta = $("cta");
+  if (c.options){
+    front.querySelectorAll(".opt").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        front.querySelectorAll(".opt").forEach(o=>o.classList.remove("sel"));
+        btn.classList.add("sel");
+        cta.disabled = false;
+      });
+    });
+  }
+  cta.addEventListener("click", ()=>{ if(cta.disabled) return; openReward(); });
+  $("backBtn").addEventListener("click", ()=>{ card.classList.remove("flipped"); updateHeight(); });
+}
+
+function openReward(){
+  card.classList.add("flipped");
+  if (idx+1 > unlocked && idx < CARDS.length-1){
+    unlocked = idx+1;
+    localStorage.setItem(UKEY, String(unlocked));
+  }
+  updateHeight();
+  updateNav();
+  burst(idx===CARDS.length-1);
+}
+
+function updateHeight(){
+  const active = card.classList.contains("flipped") ? back : front;
+  card.style.height = active.scrollHeight + "px";
+}
+
+function updateNav(){
+  $("counter").textContent = String(idx+1).padStart(2,"0") + " / " + String(CARDS.length).padStart(2,"0");
+  $("prev").disabled = idx===0;
+  $("next").disabled = idx>=CARDS.length-1 || idx>=unlocked;
+  const dn = $("dotsNav");
+  dn.innerHTML = "";
+  CARDS.forEach((_,i)=>{
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = (i===idx?"on ":"") + (i>unlocked?"locked":"");
+    b.setAttribute("aria-label", "ტესტი " + (i+1));
+    if (i<=unlocked) b.addEventListener("click", ()=>{ idx=i; render(); });
+    dn.appendChild(b);
+  });
+}
+
+$("prev").addEventListener("click", ()=>{ if(idx>0){ idx--; render(); } });
+$("next").addEventListener("click", ()=>{ if(idx<CARDS.length-1 && idx<unlocked){ idx++; render(); } });
+
+document.addEventListener("keydown", (e)=>{
+  if (e.key==="ArrowLeft" && idx>0){ idx--; render(); }
+  else if (e.key==="ArrowRight" && idx<CARDS.length-1 && idx<unlocked){ idx++; render(); }
+  else if (e.key==="Enter"){ const cta=$("cta"); if(cta && !cta.disabled && !card.classList.contains("flipped")) openReward(); }
+  else if (e.key==="Escape" && card.classList.contains("flipped")){ card.classList.remove("flipped"); updateHeight(); }
+  else if (CARDS[idx].options){ const k=e.key.toUpperCase(); if(["A","B","C","D"].includes(k)){ const b=front.querySelector(`.opt[data-i="${"ABCD".indexOf(k)}"]`); if(b) b.click(); } }
+});
+
+window.addEventListener("resize", updateHeight);
+render();
+</script>
+
+</body>
+</html>
