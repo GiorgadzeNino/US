@@ -194,6 +194,26 @@
   .hunt-note { font-family: var(--mono); font-size: 12.5px; color: var(--q-mute); margin-bottom: 14px; min-height: 1.5em; line-height: 1.4; }
   .hunt-note.ok { color: var(--q-teal); } .hunt-note.miss { color: var(--q-pri-tx); } .hunt-note.pass { color: #3fce93; font-weight: 700; }
 
+  /* security lock screen */
+  .lockbox { position: relative; background: #0b0e13; border: 1px solid #222836; border-radius: 12px; padding: 22px 18px 16px; margin: 4px 0 16px; text-align: center; overflow: hidden; }
+  .lockbox.shake { animation: shk .32s; }
+  .lock-lock { font-size: 34px; line-height: 1; margin-bottom: 8px; }
+  .lock-top { font-family: var(--mono); letter-spacing: .14em; color: #e7ecf4; font-weight: 700; font-size: 14px; }
+  .lock-sub { color: var(--q-mute); font-size: 13px; margin: 4px 0 16px; }
+  .lock-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .lockbox.open .lock-row { display: none; }
+  .lock-input { font: inherit; font-size: 14px; padding: 10px 12px; border-radius: 9px; border: 1px solid #2b3243; background: #151a24; color: #e7ecf4; width: min(220px, 60%); }
+  .lock-input::placeholder { color: #5c6678; }
+  .lock-input:focus { outline: none; border-color: var(--q-teal); box-shadow: 0 0 0 3px rgba(99,210,224,.15); }
+  .lock-btn { font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; padding: 10px 18px; border-radius: 9px; border: none; background: var(--q-teal); color: #06232a; }
+  .lock-btn:hover { filter: brightness(1.08); }
+  .lock-btn:disabled { opacity: .5; cursor: default; }
+  .lock-msg { font-family: var(--mono); font-size: 12.5px; margin-top: 12px; min-height: 1.3em; }
+  .lock-msg.ok { color: #3fce93; } .lock-msg.bad { color: var(--q-pri-tx); }
+  .lock-content { margin-top: 12px; font-family: var(--mono); color: #3fce93; font-weight: 700; font-size: 15px; }
+  .lock-content span { display: block; color: var(--q-body); font-weight: 400; font-size: 12px; margin-top: 4px; }
+  .lock-debug { margin-top: 16px; padding-top: 12px; border-top: 1px dashed #1e2431; font-family: var(--mono); font-size: 10.5px; color: #3a4252; word-break: break-all; }
+
   /* nav */
   .nav { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 22px; }
   .nav button { font: inherit; font-size: 14px; cursor: pointer; background: rgba(0,0,0,.04); border: 1px solid rgba(0,0,0,.1); color: var(--ink-soft); border-radius: 10px; padding: 8px 14px; transition: all .15s; }
@@ -293,13 +313,13 @@ const CARDS = [
       body:`<p class="mono">5/5 Bugs detected.</p><p class="mono">Severity: Critical<br>Tester: Excellent<br>System: Safe</p><p>შენ დაამტკიცე, რომ პატარა დეტალსაც კი ვერ გამოგაპარებენ. 😎</p><p>მაგრამ ერთი რამ არის, რასაც ვერცერთი Tester ვერ დააფიქსირებს როგორც Bug…</p><p class="big">შენი ადგილი ჩემს ცხოვრებაში. ❤️</p><p class="mono">Status: PERMANENT</p>`,
       emoji:"🎁", box:`REWARD UNLOCKED.` }
   },
-  { // TC-06
-    badge:"TC-06", title:"Security Test", variant:"dark",
+  { // TC-06 — SECURITY (interactive locked screen)
+    badge:"TC-06", title:"Security Test", variant:"dark", type:"security", password:"FOREVER",
     meta:[{t:"Module: Security",cls:"mod"},{t:"Priority: Critical",cls:"pri"}],
-    lead:`<p>ბოლო მნიშვნელოვანი უსაფრთხოების შემოწმება.</p>`,
-    qHTML:`<p class="qline"><span class="qlabel">დავალება:</span> დაიცავი სისტემა გარე საფრთხეებისგან.</p><p class="plead">მაგრამ არსებობს ერთი პრობლემა… <span class="hl">Security breach detected.</span> ვიღაცამ უკვე შეაღწია სისტემაში. ვინ? მე.</p><p class="plead">ერთადერთი გამოსავალი: <span class="accent">ACCEPT ACCESS</span>.</p>`,
-    expected:`▸ Access granted. →`,
-    cta:"OPEN REWARD",
+    lead:`<p>სისტემაში დაცული ინფორმაციაა.</p><p>მაგრამ კარგმა Tester-მა ყოველთვის უნდა სცადოს: შეუძლია თუ არა შესვლა ავტორიზაციის გარეშე?</p>`,
+    task:`<p class="qline"><span class="qlabel">დავალება:</span> იპოვე გზა, რომ გახსნა <span class="accent">LOCKED CONTENT</span>.</p><p class="plead"><span class="qlabel">Hint:</span> ზოგჯერ პაროლი პირდაპირ თვალწინაა. 👀</p>`,
+    expected:`▸ Expected Result: Locked content successfully accessed.`,
+    cta:"SECURITY TEST PASSED · REWARD",
     r:{ badge:"TC-06", pass:"✓ SECURITY TEST PASSED · Access granted",
       body:`<p>რადგან ამ სისტემაში შენი Access Level არის:</p><p class="big">ADMIN</p><p>და რადგან Admin-ს შესაბამისი equipment სჭირდება…</p>`,
       emoji:"🩲", box:`REWARD UNLOCKED.` }
@@ -334,7 +354,7 @@ function render(){
   front.className = "face front" + (c.variant==="final" ? " final" : "");
   back.className  = "face back"  + (c.r.variant==="final" ? " final" : "");
 
-  front.innerHTML = c.type==="bughunt" ? huntFront(c) : `
+  front.innerHTML = c.type==="bughunt" ? huntFront(c) : c.type==="security" ? secFront(c) : `
     <div class="term"><span class="dots"><i class="r1"></i><i class="r2"></i><i class="r3"></i></span><span class="path">project_ჩვენ.qa</span></div>
     <span class="pill tc">${c.badge}</span>
     <h1 class="q-title">${c.title}</h1>
@@ -371,6 +391,7 @@ function bind(){
     });
   }
   if (c.type==="bughunt") bindHunt(c);
+  if (c.type==="security") bindSec(c);
   cta.addEventListener("click", ()=>{ if(cta.disabled) return; openReward(); });
   $("backBtn").addEventListener("click", ()=>{ card.classList.remove("flipped"); updateHeight(); });
 }
@@ -449,6 +470,57 @@ function bindHunt(c){
   }, 1000);
 }
 
+function secFront(c){
+  return `
+    <div class="term"><span class="dots"><i class="r1"></i><i class="r2"></i><i class="r3"></i></span><span class="path">project_ჩვენ.qa</span></div>
+    <span class="pill tc">${c.badge}</span>
+    <h1 class="q-title">${c.title}</h1>
+    <div class="meta">${metaHTML(c.meta)}</div>
+    <div class="lead">${c.lead}</div>
+    <div class="qblock">${c.task}</div>
+    <div class="lockbox" id="lockbox">
+      <div class="lock-lock" id="lockIcon">🔒</div>
+      <div class="lock-top">LOCKED CONTENT</div>
+      <div class="lock-sub">ავტორიზაცია საჭიროა წვდომისთვის.</div>
+      <div class="lock-row">
+        <input class="lock-input" id="pwInput" type="text" autocomplete="off" spellcheck="false" placeholder="შეიყვანე პაროლი…" aria-label="password">
+        <button class="lock-btn" type="button" id="pwBtn">Unlock</button>
+      </div>
+      <div class="lock-msg" id="pwMsg"></div>
+      <div class="lock-content" id="lockContent" hidden>✅ ACCESS GRANTED<span>locked content successfully accessed</span></div>
+      <div class="lock-debug">console.log(session) ▸ { user: "nino", key: "${(c.password||"").toLowerCase()}", locked: true }</div>
+    </div>
+    <div class="qfoot">${c.expected}<br><button class="reward-cta" type="button" id="cta" disabled>${c.cta}</button></div>`;
+}
+
+function bindSec(c){
+  const inp = $("pwInput"), btn = $("pwBtn"), msg = $("pwMsg"), cta = $("cta"), box = $("lockbox");
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const pw = (c.password||"").trim().toLowerCase();
+  let done = false;
+
+  function tryUnlock(){
+    if (done) return;
+    const v = (inp.value||"").trim().toLowerCase();
+    if (!v) return;
+    if (v === pw){
+      done = true;
+      box.classList.add("open");
+      $("lockIcon").textContent = "🔓";
+      inp.disabled = true; btn.disabled = true;
+      $("lockContent").hidden = false;
+      msg.textContent = "✅ Access granted."; msg.className = "lock-msg ok";
+      cta.disabled = false;
+      updateHeight();
+    } else {
+      msg.textContent = "❌ Access denied — არასწორი პაროლი"; msg.className = "lock-msg bad";
+      if (!reduce){ box.classList.add("shake"); setTimeout(()=>box.classList.remove("shake"), 320); }
+    }
+  }
+  btn.addEventListener("click", tryUnlock);
+  inp.addEventListener("keydown", (e)=>{ if (e.key==="Enter"){ e.preventDefault(); tryUnlock(); } });
+}
+
 function openReward(){
   card.classList.add("flipped");
   if (idx+1 > unlocked && idx < CARDS.length-1){
@@ -458,6 +530,25 @@ function openReward(){
   updateHeight();
   updateNav();
   burst(idx===CARDS.length-1);
+}
+
+function burst(final){
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const b = document.createElement("div");
+  b.className = "burst";
+  const glyphs = final ? ["❤️","💍","♥","✨","💖"] : ["♥","💚","✓","💙","♡","✨"];
+  const n = final ? 26 : 16;
+  for (let i=0;i<n;i++){
+    const s = document.createElement("span");
+    s.textContent = glyphs[Math.floor(Math.random()*glyphs.length)];
+    s.style.left = (50 + (Math.random()*46 - 23)) + "%";
+    s.style.top = (56 + Math.random()*8) + "%";
+    s.style.animationDelay = (Math.random()*0.3) + "s";
+    s.style.fontSize = (14 + Math.random()*14) + "px";
+    b.appendChild(s);
+  }
+  document.body.appendChild(b);
+  setTimeout(()=>b.remove(), 1900);
 }
 
 function updateHeight(){
@@ -485,6 +576,7 @@ $("prev").addEventListener("click", ()=>{ if(idx>0){ idx--; render(); } });
 $("next").addEventListener("click", ()=>{ if(idx<CARDS.length-1 && idx<unlocked){ idx++; render(); } });
 
 document.addEventListener("keydown", (e)=>{
+  if (e.target && (e.target.tagName==="INPUT" || e.target.tagName==="TEXTAREA")) return;
   if (e.key==="ArrowLeft" && idx>0){ idx--; render(); }
   else if (e.key==="ArrowRight" && idx<CARDS.length-1 && idx<unlocked){ idx++; render(); }
   else if (e.key==="Enter"){ const cta=$("cta"); if(cta && !cta.disabled && !card.classList.contains("flipped")) openReward(); }
