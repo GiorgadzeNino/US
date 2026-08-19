@@ -635,14 +635,12 @@ document.addEventListener("keydown", (e)=>{
 
 window.addEventListener("resize", updateHeight);
 
-// intro / landing
+// intro / landing — shown on every load
 const intro = $("intro");
 $("startBtn").addEventListener("click", ()=>{
   intro.classList.add("gone");
-  localStorage.setItem("chven-intro-seen","1");
   updateHeight();
 });
-if (localStorage.getItem("chven-intro-seen")) intro.classList.add("gone");
 
 render();
 </script>
