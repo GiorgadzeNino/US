@@ -69,6 +69,30 @@
   .kicker { font-family: var(--mono); font-size: 12.5px; letter-spacing: .05em; color: var(--ink-soft); margin: 0 0 18px; display: flex; align-items: center; gap: 9px; }
   .kicker .heart { color: var(--r-accent); }
 
+  /* ---- intro / landing ---- */
+  .intro { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 20px 16px; overflow-y: auto; background: var(--page); transition: opacity .5s ease, visibility .5s; }
+  .intro.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+  .intro-card { max-width: 520px; width: 100%; margin: auto; background: var(--q-bg); border: 1px solid #222836; border-radius: 22px; padding: clamp(24px,5vw,38px); color: var(--q-body); box-shadow: 0 1px 2px rgba(15,18,24,.14), 0 40px 80px -30px rgba(15,18,24,.6); }
+  .intro-title { font-size: clamp(26px,6vw,38px); font-weight: 800; color: var(--q-title); letter-spacing: -.02em; margin: 8px 0 6px; text-wrap: balance; }
+  .intro-sub { font-family: var(--mono); font-size: 12.5px; letter-spacing: .14em; color: var(--q-teal); margin-bottom: 20px; }
+  .intro-greet { color: var(--q-title); font-weight: 600; font-size: 16px; margin: 0 0 12px; }
+  .intro-card p { font-size: 15px; line-height: 1.6; margin: 0 0 12px; color: var(--q-body); }
+  .rules { border: 1px solid #2a3142; border-radius: 14px; padding: 15px 18px; margin: 18px 0 22px; background: #12161f; }
+  .rules-h { font-family: var(--mono); font-size: 12.5px; letter-spacing: .06em; color: var(--q-high-tx); margin-bottom: 10px; font-weight: 700; }
+  .rules ul { margin: 0; padding-left: 18px; }
+  .rules li { font-size: 14px; line-height: 1.5; margin-bottom: 7px; color: var(--q-body); }
+  .rules li::marker { color: var(--q-teal); }
+  .rules li:last-child { margin-bottom: 0; }
+  .intro-ready { color: var(--q-title); font-weight: 600; margin: 0 0 16px !important; }
+  .start-btn { font: inherit; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; padding: 15px; border: none; border-radius: 13px; background: linear-gradient(160deg, var(--q-teal), #2ba7bb); color: #052026; box-shadow: 0 12px 30px -12px rgba(99,210,224,.5); transition: transform .15s, box-shadow .15s; }
+  .start-btn:hover { transform: translateY(-2px); box-shadow: 0 18px 36px -14px rgba(99,210,224,.55); }
+  .start-btn:active { transform: translateY(0); }
+  .intro-status { font-family: var(--mono); font-size: 12px; color: var(--q-mute); margin-top: 18px; text-align: center; }
+  .blink { color: var(--q-teal); }
+  .blink::after { content: "▋"; margin-left: 2px; animation: bl 1s steps(2) infinite; }
+  @keyframes bl { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .blink::after { animation: none; } .start-btn:hover { transform: none; } }
+
   /* ---- stage / flip ---- */
   .stage { perspective: 2200px; width: 100%; max-width: 470px; }
   .card { position: relative; width: 100%; transform-style: preserve-3d; transition: transform .62s cubic-bezier(.4,.05,.2,1), height .35s ease; }
@@ -238,6 +262,29 @@
 <body>
 
 
+<div class="intro" id="intro">
+  <div class="intro-card">
+    <div class="term"><span class="dots"><i class="r1"></i><i class="r2"></i><i class="r3"></i></span><span class="path">project_ჩვენ.qa — QA CHALLENGE</span></div>
+    <div class="intro-title">🎁 PROJECT <span class="hl">„ჩვენ“</span></div>
+    <div class="intro-sub">QA CHALLENGE · RELEASE v1.0</div>
+    <p class="intro-greet">გამარჯობა, Tester 👨‍💻</p>
+    <p>შენ წინაშეა განსაკუთრებული პროექტი. პროექტი, რომელზეც ბევრი დრო, ფიქრი და სიყვარული დაიხარჯა.</p>
+    <p>შენი დავალებაა გაიარო ყველა Test Case, იპოვო სწორი პასუხები, გამოავლინო „ბაგები“ და ეტაპობრივად გახსნა ყველა დამალული საჩუქარი.</p>
+    <div class="rules">
+      <div class="rules-h">⚠️ წესები</div>
+      <ul>
+        <li>თითოეული Test Case უნდა გაიარო თანმიმდევრობით.</li>
+        <li>სანამ ტესტს არ ჩააბარებ, შემდეგ კონვერტზე გადასვლა აკრძალულია.</li>
+        <li>არ შეიძლება <b>Skip</b>.</li>
+        <li>Hint-ის გამოყენება დაშვებულია მხოლოდ უკიდურეს შემთხვევაში. 😌</li>
+      </ul>
+    </div>
+    <p class="intro-ready">Ready to test? მაშინ დავიწყოთ.</p>
+    <button class="start-btn" id="startBtn" type="button">▶ დაწყება · START CHALLENGE</button>
+    <div class="intro-status">Project „ჩვენ“ — QA Challenge · Status: <span class="blink">IN PROGRESS…</span></div>
+  </div>
+</div>
+
 <p class="kicker">project_ჩვენ.qa <span class="heart">♥</span> compatibility suite</p>
 
 <div class="stage">
@@ -289,7 +336,7 @@ const CARDS = [
     cta:"OPEN TC-03 REWARD",
     r:{ badge:"TC-03", pass:"✓ BUG DETECTED",
       body:`<p>Bug report #001:</p><p>Severity: Critical. Reproducible: ყოველ დღე. 😍</p><p>Resolution: WON'T FIX — feature, not a bug.</p>`,
-      emoji:"🎁", box:`REWARD UNLOCKED.` }
+      emoji:"🧴", box:`REWARD: L'Homme — მამაკაცს, რომლის სურნელიც ყველაზე მეტად მიყვარს.` }
   },
   { // TC-04
     badge:"TC-04", title:"Performance Test", variant:"dark",
@@ -311,7 +358,7 @@ const CARDS = [
     cta:"BUG HUNT PASSED · REWARD",
     r:{ badge:"TC-05", pass:"✓ BUG HUNT PASSED",
       body:`<p class="mono">5/5 Bugs detected.</p><p class="mono">Severity: Critical<br>Tester: Excellent<br>System: Safe</p><p>შენ დაამტკიცე, რომ პატარა დეტალსაც კი ვერ გამოგაპარებენ. 😎</p><p>მაგრამ ერთი რამ არის, რასაც ვერცერთი Tester ვერ დააფიქსირებს როგორც Bug…</p><p class="big">შენი ადგილი ჩემს ცხოვრებაში. ❤️</p><p class="mono">Status: PERMANENT</p>`,
-       emoji:"🧴", box:`REWARD: L'Homme — მამაკაცს, რომლის სურნელიც ყველაზე მეტად მიყვარს.`}
+      emoji:"🎁", box:`REWARD UNLOCKED.` }
   },
   { // TC-06 — SECURITY (interactive locked screen)
     badge:"TC-06", title:"Security Test", variant:"dark", type:"security", password:"29.08.2025",
@@ -321,7 +368,7 @@ const CARDS = [
     expected:`▸ Expected Result: Locked content successfully accessed.`,
     cta:"SECURITY TEST PASSED · REWARD",
     r:{ badge:"TC-06", pass:"✓ SECURITY TEST PASSED · Access granted",
-      body:`<p>რადგან ამ სისტემაში შენი Access Level არის:</p><p class="big">HUSBAND</p><p>და რადგან Husband-ს შესაბამისი equipment სჭირდება…</p>`,
+      body:`<p>რადგან ამ სისტემაში შენი Access Level არის:</p><p class="big">ADMIN</p><p>და რადგან Admin-ს შესაბამისი equipment სჭირდება…</p>`,
       emoji:"🩲", box:`REWARD UNLOCKED.` }
   },
   { // FINAL
@@ -408,7 +455,7 @@ function huntFront(c){
       <div class="screen-bar"><span class="sdots"><i></i><i></i><i></i></span><span class="surl">project_ჩვენ.qa/about-us</span></div>
       <div class="screen-body">
         <div class="au-title">ABOUT US</div>
-        <div class="au-couple">💍 Nika &amp; Nino</div>
+        <div class="au-couple">💍 Nino &amp; Nino</div>
         <div class="au-row"><span class="au-k">Bride:</span> Nino</div>
         <div class="au-row"><span class="au-k">Groom:</span> <span class="bug" data-bug="4" data-note="Bride და Groom ორივე „Nino“-ა 😄">Nino</span></div>
         <div class="au-row"><span class="au-k">ხელის თხოვნა:</span> <span class="bug" data-bug="2" data-note="თარიღის ფორმატი განსხვავებულია (28.08.2025 vs 15 November 2025)">28.08.2025</span></div>
@@ -585,6 +632,16 @@ document.addEventListener("keydown", (e)=>{
 });
 
 window.addEventListener("resize", updateHeight);
+
+// intro / landing
+const intro = $("intro");
+$("startBtn").addEventListener("click", ()=>{
+  intro.classList.add("gone");
+  localStorage.setItem("chven-intro-seen","1");
+  updateHeight();
+});
+if (localStorage.getItem("chven-intro-seen")) intro.classList.add("gone");
+
 render();
 </script>
 
