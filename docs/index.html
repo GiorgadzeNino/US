@@ -170,6 +170,30 @@
   .back.final .r-back { color: #c99aa2; }
   .r-back:hover { color: var(--r-accent); }
 
+  /* bug hunt screen */
+  .screen { background: #f6f7f9; color: #1c222b; border: 1px solid #e4e7ec; border-radius: 12px; overflow: hidden; margin: 4px 0 16px; cursor: crosshair; }
+  .screen-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #eceef2; border-bottom: 1px solid #e0e3e9; }
+  .sdots { display: flex; gap: 5px; } .sdots i { width: 9px; height: 9px; border-radius: 50%; background: #c4c9d4; display: block; }
+  .surl { font-family: var(--mono); font-size: 11px; color: #8a93a6; }
+  .screen-body { padding: 16px 16px 18px; font-size: 14.5px; line-height: 1.65; }
+  .au-title { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; color: #9aa2b1; margin-bottom: 8px; }
+  .au-couple { font-size: 18px; font-weight: 750; margin-bottom: 12px; }
+  .au-row { margin-bottom: 4px; } .au-k { color: #6b7280; }
+  .au-note { margin: 12px 0 2px; color: #be3455; font-weight: 600; }
+  .au-btns { display: flex; gap: 8px; margin-top: 14px; }
+  .au-btn { font-family: var(--mono); font-size: 12.5px; padding: 7px 14px; border-radius: 8px; background: #e7eaef; color: #3a4150; }
+  .au-btn.primary { background: #2b7a44; color: #fff; }
+  .bug { position: relative; border-radius: 4px; padding: 0 2px; transition: background .15s, box-shadow .15s; }
+  .bug.found { background: rgba(40,170,90,.22); box-shadow: 0 0 0 2px rgba(40,170,90,.5); color: #146c37; font-weight: 700; }
+  .bug.found::after { content: "✓"; position: absolute; top: -8px; right: -7px; font-size: 9px; background: #28aa5a; color: #fff; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; }
+  .screen.shake { animation: shk .32s; }
+  @keyframes shk { 20% { transform: translateX(-5px); } 60% { transform: translateX(5px); } 100% { transform: translateX(0); } }
+  .hunt-status { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 13px; color: var(--q-body); margin-bottom: 8px; }
+  .hunt-status b { color: #fff; font-variant-numeric: tabular-nums; }
+  .hunt-status.done b { color: #3fce93; }
+  .hunt-note { font-family: var(--mono); font-size: 12.5px; color: var(--q-mute); margin-bottom: 14px; min-height: 1.5em; line-height: 1.4; }
+  .hunt-note.ok { color: var(--q-teal); } .hunt-note.miss { color: var(--q-pri-tx); } .hunt-note.pass { color: #3fce93; font-weight: 700; }
+
   /* nav */
   .nav { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 22px; }
   .nav button { font: inherit; font-size: 14px; cursor: pointer; background: rgba(0,0,0,.04); border: 1px solid rgba(0,0,0,.1); color: var(--ink-soft); border-radius: 10px; padding: 8px 14px; transition: all .15s; }
@@ -258,16 +282,16 @@ const CARDS = [
       body:`<p>შედეგის მიუხედავად…</p><p>ამ ეტაპამდე მოსვლა უკვე წარმატებაა.</p><p class="mono">TEST RESULT: PASSED</p>`,
       emoji:"⚓", box:`REWARD: Performance approved.` }
   },
-  { // TC-05
-    badge:"TC-05", title:"Stress Test", variant:"dark",
-    meta:[{t:"Module: Stress Test",cls:"mod"},{t:"Priority: Critical",cls:"pri"}],
-    lead:`<p>აქ უკვე მარტივი არ იქნება. სისტემა გადაყვანილია მაქსიმალურ დატვირთვაზე.</p>`,
-    qHTML:`<p class="qline"><span class="qlabel">დავალება:</span> გაიმეორე ტესტი. ისევ <span class="accent">SEA BATTLE</span>.</p><p class="lines">ამჯერად პირობები იცვლება: გაქვს შეზღუდული დრო.</p><p class="plead">არ იჩქარო. არ დაიბენ. არ დანებდე.</p>`,
-    expected:`▸ Expected Result: Stress-ის პირობებშიც სწორი გადაწყვეტილება.`,
-    cta:"REWARD",
-    r:{ badge:"TC-05", pass:"✓ STRESS TEST PASSED",
-      body:`<p>სისტემამ გაუძლო დატვირთვას. შენც.</p><p>ერთი რამ საბოლოოდ დადასტურდა: შენთან ერთად ყველაზე რთული Level-იც კი სასიამოვნოა.</p>`,
-      emoji:"🔥", box:`REWARD UNLOCKED.` }
+  { // TC-05 — BUG HUNT
+    badge:"TC-05", title:"Bug Hunt 🔎", variant:"dark", type:"bughunt", time:180,
+    meta:[{t:"Module: UI / Functional Testing",cls:"mod"},{t:"Priority: Critical",cls:"pri"}],
+    lead:`<p>წინა ტესტები წარმატებით გაიარე.</p><p>მაგრამ სისტემაში დაფიქსირდა რამდენიმე პრობლემა. 🚨</p>`,
+    task:`<p class="qline"><span class="qlabel">დავალება:</span> ქვემოთ მოცემულ ეკრანზე იპოვე <span class="accent">5 Bug</span>.</p><p class="plead">ყურადღებით შეამოწმე: ტექსტები · ღილაკები · თარიღები · ლოგიკა · განლაგება. ყველაფერი ისე არ არის, როგორც უნდა იყოს. 👀</p>`,
+    expected:`▸ Expected Result: 5/5 Bug აღმოჩენილი. ⏱️ დრო: 3 წუთი.`,
+    cta:"BUG HUNT PASSED · REWARD",
+    r:{ badge:"TC-05", pass:"✓ BUG HUNT PASSED",
+      body:`<p class="mono">5/5 Bugs detected.</p><p class="mono">Severity: Critical<br>Tester: Excellent<br>System: Safe</p><p>შენ დაამტკიცე, რომ პატარა დეტალსაც კი ვერ გამოგაპარებენ. 😎</p><p>მაგრამ ერთი რამ არის, რასაც ვერცერთი Tester ვერ დააფიქსირებს როგორც Bug…</p><p class="big">შენი ადგილი ჩემს ცხოვრებაში. ❤️</p><p class="mono">Status: PERMANENT</p>`,
+      emoji:"🎁", box:`REWARD UNLOCKED.` }
   },
   { // TC-06
     badge:"TC-06", title:"Security Test", variant:"dark",
@@ -298,17 +322,19 @@ const $ = id => document.getElementById(id);
 const card = $("card"), front = $("front"), back = $("back");
 const UKEY = "chven-qa-unlocked";
 let idx = 0;
+let hunt = null;
 let unlocked = Math.max(0, Math.min(CARDS.length-1, parseInt(localStorage.getItem(UKEY)||"0",10) || 0));
 
 function metaHTML(m){ return m.map(x=>`<span class="pill ${x.cls}">${x.t}</span>`).join(""); }
 
 function render(){
   const c = CARDS[idx];
+  if (hunt){ clearInterval(hunt); hunt = null; }
   card.classList.remove("flipped");
   front.className = "face front" + (c.variant==="final" ? " final" : "");
   back.className  = "face back"  + (c.r.variant==="final" ? " final" : "");
 
-  front.innerHTML = `
+  front.innerHTML = c.type==="bughunt" ? huntFront(c) : `
     <div class="term"><span class="dots"><i class="r1"></i><i class="r2"></i><i class="r3"></i></span><span class="path">project_ჩვენ.qa</span></div>
     <span class="pill tc">${c.badge}</span>
     <h1 class="q-title">${c.title}</h1>
@@ -344,8 +370,83 @@ function bind(){
       });
     });
   }
+  if (c.type==="bughunt") bindHunt(c);
   cta.addEventListener("click", ()=>{ if(cta.disabled) return; openReward(); });
   $("backBtn").addEventListener("click", ()=>{ card.classList.remove("flipped"); updateHeight(); });
+}
+
+function huntFront(c){
+  return `
+    <div class="term"><span class="dots"><i class="r1"></i><i class="r2"></i><i class="r3"></i></span><span class="path">project_ჩვენ.qa</span></div>
+    <span class="pill tc">${c.badge}</span>
+    <h1 class="q-title">${c.title}</h1>
+    <div class="meta">${metaHTML(c.meta)}</div>
+    <div class="lead">${c.lead}</div>
+    <div class="qblock">${c.task}</div>
+    <div class="screen" id="screen">
+      <div class="screen-bar"><span class="sdots"><i></i><i></i><i></i></span><span class="surl">project_ჩვენ.qa/about-us</span></div>
+      <div class="screen-body">
+        <div class="au-title">ABOUT US</div>
+        <div class="au-couple">💍 Nino &amp; Nino</div>
+        <div class="au-row"><span class="au-k">Bride:</span> Nino</div>
+        <div class="au-row"><span class="au-k">Groom:</span> <span class="bug" data-bug="4" data-note="Bride და Groom ორივე „Nino“-ა 😄">Nino</span></div>
+        <div class="au-row"><span class="au-k">ხელის თხოვნა:</span> <span class="bug" data-bug="2" data-note="თარიღის ფორმატი განსხვავებულია (28.08.2025 vs 15 November 2025)">28.08.2025</span></div>
+        <div class="au-row"><span class="au-k">ქორწილის თარიღი:</span> 15 November <span class="bug" data-bug="1" data-note="წელი არასწორია — 2025 → 2026">2025</span></div>
+        <div class="au-note">💕 Happy <span class="bug" data-bug="5" data-note="„2 year“ — რიცხვი/გრამატიკა არასწორია">2 year</span> anniversary</div>
+        <div class="au-btns"><span class="au-btn primary">Confirm</span><span class="au-btn"><span class="bug" data-bug="3" data-note="ღილაკის ტექსტი: „Cencel“ → „Cancel“">Cencel</span></span></div>
+      </div>
+    </div>
+    <div class="hunt-status" id="huntStatus">
+      <span>🔎 Found: <b id="foundN">0</b>/5</span>
+      <span>⏱️ <b id="huntTime">3:00</b></span>
+    </div>
+    <div class="hunt-note" id="huntNote">დააჭირე ეკრანზე „ბაგებს“ 🔍</div>
+    <div class="qfoot">${c.expected}<br><button class="reward-cta" type="button" id="cta" disabled>${c.cta}</button></div>`;
+}
+
+function bindHunt(c){
+  const screen = $("screen"), foundN = $("foundN"), noteEl = $("huntNote"), timeEl = $("huntTime"), cta = $("cta");
+  const found = new Set();
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  screen.addEventListener("click", (e)=>{
+    const bug = e.target.closest(".bug");
+    if (bug){
+      if (found.has(bug.dataset.bug)) return;
+      found.add(bug.dataset.bug);
+      bug.classList.add("found");
+      foundN.textContent = found.size;
+      noteEl.textContent = "✓ " + bug.dataset.note;
+      noteEl.className = "hunt-note ok";
+      updateHeight();
+      if (found.size >= 5) passHunt();
+    } else {
+      noteEl.textContent = "❌ ეს არ არის bug — კიდევ დააკვირდი";
+      noteEl.className = "hunt-note miss";
+      if (!reduce){ screen.classList.add("shake"); setTimeout(()=>screen.classList.remove("shake"), 320); }
+    }
+  });
+
+  function passHunt(){
+    if (hunt){ clearInterval(hunt); hunt = null; }
+    cta.disabled = false;
+    noteEl.textContent = "✅ BUG HUNT PASSED · 5/5 — გახსენი REWARD";
+    noteEl.className = "hunt-note pass";
+    $("huntStatus").classList.add("done");
+    updateHeight();
+  }
+
+  let t = c.time || 180;
+  const fmt = s => Math.floor(s/60) + ":" + String(s%60).padStart(2,"0");
+  timeEl.textContent = fmt(t);
+  if (hunt){ clearInterval(hunt); }
+  hunt = setInterval(()=>{
+    t--;
+    if (t <= 0){
+      clearInterval(hunt); hunt = null; timeEl.textContent = "0:00";
+      if (found.size < 5){ noteEl.textContent = "⏱️ დრო ამოიწურა — არა უშავს, გააგრძელე ნელა 💚"; noteEl.className = "hunt-note miss"; }
+    } else { timeEl.textContent = fmt(t); }
+  }, 1000);
 }
 
 function openReward(){
